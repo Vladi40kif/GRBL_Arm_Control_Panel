@@ -1,0 +1,47 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="Simple COM Console" Height="460" Width="1000" ScrollViewer.HorizontalScrollBarVisibility="Auto" MinWidth="500" MinHeight="380">
+    <Grid KeyDown="Grid_KeyDown">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="94*"/>
+            <ColumnDefinition Width="251*"/>
+        </Grid.ColumnDefinitions>
+        <ComboBox Name="ComboBox_COMs" HorizontalAlignment="Left" Margin="19,23,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_COMs_SelectionChanged" />
+        <Label Content="Select COM:" HorizontalAlignment="Left" Margin="32,0,0,0" VerticalAlignment="Top" Height="34" Width="94"/>
+        <Button Name="Button_RefleshCOMsList" Content="Refresh" HorizontalAlignment="Left" Margin="148,24,0,0" VerticalAlignment="Top" Height="21" Width="67" Click="Button_RefleshCOMsList_Click" Grid.ColumnSpan="2"/>
+        <ComboBox Name="ComboBox_Bundrate" HorizontalAlignment="Left" Margin="19,69,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_Bundrate_SelectionChanged" >
+            <TextBlock>300</TextBlock>
+            <TextBlock>1200</TextBlock>
+            <TextBlock>2400</TextBlock>
+            <TextBlock>4800</TextBlock>
+            <TextBlock>9600</TextBlock>
+            <TextBlock>19200</TextBlock>
+            <TextBlock>38400</TextBlock>
+            <TextBlock>57600</TextBlock>
+            <TextBlock>74880</TextBlock>
+            <TextBlock>115200</TextBlock>
+        </ComboBox>
+        <Label Content="Select bund rate:" HorizontalAlignment="Left" Margin="30,46,0,0" VerticalAlignment="Top" Height="34" Width="107"/>
+
+        <ListBox Name="ListBox_Chat" Margin="0,10,394,50" Grid.Column="1"/>
+        <Button Name="Button_Start" Content="Start" HorizontalAlignment="Left" Margin="19,117,0,0" VerticalAlignment="Top" Height="25" Width="120" Click="Button_Start_Click"/>
+        <Button Name="Button_Stop" Content="Stop" HorizontalAlignment="Left" Margin="19,158,0,0" VerticalAlignment="Top" Height="25" Width="120" Click="Button_Stop_Click"/>
+        <TextBox Name="TextBox_InputCommand" Margin="0,0,450,15" VerticalAlignment="Bottom" VerticalContentAlignment="Bottom" MinHeight="0" KeyDown="TextBox_InputCommand_KeyDown" FontSize="16" Grid.Column="1" />
+        <Button Name="Button_Send" Content="SEND" Margin="0,0,395,15" VerticalAlignment="Bottom" Height="25" Width="45" VerticalContentAlignment="Bottom" MinHeight="0" HorizontalAlignment="Right" Click="Button_Send_Click" FontSize="14" Grid.Column="1" />
+        <CheckBox Name="CheckBox_ShowTime" Content="Show time" HorizontalAlignment="Left" Margin="19,207,0,0" VerticalAlignment="Top" Width="91"/>
+        <CheckBox Name="CheckBox_ShowSendData" Content="Show send data" HorizontalAlignment="Left" Margin="19,231,0,0" VerticalAlignment="Top"/>
+        <Button Name="Button_ClearConsole" Content="Clear" HorizontalAlignment="Left" Margin="17,300,0,0" VerticalAlignment="Top" Height="25" Width="54" Click="Button_ClearConsole_Click"/>
+        <Button Name="Button_LogSave" Content="Save log" HorizontalAlignment="Left" Margin="85,300,0,0" VerticalAlignment="Top" Height="25" Width="54" Click="Button_LogSave_Click"/>
+        <Label Name="Lable_X" Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="450,107,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_Y" Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="450,150,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_Z" Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="450,196,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_S" Content="S" Grid.Column="1" HorizontalAlignment="Left" Margin="450,312,0,0" VerticalAlignment="Top" Height="36" Width="79" FontSize="22" RenderTransformOrigin="0.475,0.573"/>
+    </Grid>
+
+</Window>
