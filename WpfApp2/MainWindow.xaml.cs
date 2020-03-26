@@ -6,6 +6,8 @@ using System.Windows.Media;
 using System.IO;
 using Microsoft.Win32;
 using System.IO.Ports;
+using System.Threading;
+using SharpDX.DirectInput;
 
 namespace WpfApp1
 {
@@ -15,11 +17,18 @@ namespace WpfApp1
         private DateTime time = DateTime.Now;
         private SerialPort _serialPort;
         double X, Y, Z;
+        double joystickX, joystickY, joystickZ;
         int S;
+        Thread joysticThread;
         public MainWindow()
         {
+        
             X = Y = Z = 0.0;
             S = 0;
+
+            joysticThread = new Thread(new ThreadStart(Joystick));
+            joysticThread.Start();
+
 
             StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
 
@@ -99,7 +108,7 @@ namespace WpfApp1
         }
         private void TextBox_InputCommand_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == System.Windows.Input.Key.Enter)
                 Button_Send_Click(this, new RoutedEventArgs());
         }
         private void AddToListBox(string msg)
@@ -132,38 +141,39 @@ namespace WpfApp1
         }
         private void Grid_KeyDown(object sender, KeyEventArgs e)
         {
+            double stp = 1.5;
             switch (e.Key) {
-                case Key.F1:        //x++
-                    X++;
+                case System.Windows.Input.Key.F1:        //x++
+                    X+=stp;
                     break;
-                case Key.F2:        //x--
-                    X--;
+                case System.Windows.Input.Key.F2:        //x--
+                    X -= stp;
                     break;
-                case Key.F5:        //y++
-                    Y++;
+                case System.Windows.Input.Key.F5:        //y++
+                    Y += stp;
                     break;
-                case Key.F6:        //y--
-                    Y--;
+                case System.Windows.Input.Key.F6:        //y--
+                    Y -= stp;
                     break;
-                case Key.F9:        //z++
-                    Z++;
+                case System.Windows.Input.Key.F3:        //z++
+                    Z += stp;
                     break;
-                case Key.F10:       //z--
-                    Z--;
+                case System.Windows.Input.Key.F4:       //z--
+                    Z -= stp;
                     break;
-                case Key.Home:      //set zero
+                case System.Windows.Input.Key.Home:      //set zero
                     _serialPort.Write("G92 X0 Y0 Z0\n");
                     AddToListBox("G92 X0 Y0 Z0\n");
                     X = Y = Z = 0;
                     break;
-                case Key.LeftCtrl:  //spindel++
+                case System.Windows.Input.Key.PageUp:  //spindel++
                     if (S >= 60)
                         break;
                     S++;
                     _serialPort.Write("M3 S" + S.ToString() + "\n");
                     AddToListBox("M3 S" + S.ToString() + "\n");
                     break;
-                case Key.LeftAlt:   // spindel--
+                case System.Windows.Input.Key.PageDown:   // spindel--
                     if (S <= 0)
                         break;
                     S--;
@@ -185,12 +195,69 @@ namespace WpfApp1
                 Lable_S.Content = S.ToString();
             });
         }
-        public void GoTo(double x, double y, double z)
-        {
-            _serialPort.Write("G0 X" + (X - x).ToString() + " Y" + (Y - y).ToString() + " Z" + (Z - z).ToString());
-            X += x;
-            Y += y;
-            Z += z;
+        void Joystick()
+        { 
+            var directInput = new DirectInput();
+            var joystickGuid = Guid.Empty;
+
+            foreach (var deviceInstance in directInput.GetDevices(SharpDX.DirectInput.DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
+                joystickGuid = deviceInstance.InstanceGuid;
+
+            if (joystickGuid == Guid.Empty)
+                foreach (var deviceInstance in directInput.GetDevices(SharpDX.DirectInput.DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
+                    joystickGuid = deviceInstance.InstanceGuid;
+
+            if (joystickGuid == Guid.Empty)
+            {
+                Console.WriteLine("No joystick/Gamepad found.");
+                Console.ReadKey();
+                Environment.Exit(1);
+            }
+
+
+            var joystick = new Joystick(directInput, joystickGuid);
+
+            Console.WriteLine("Found Joystick/Gamepad with GUID: {0}", joystickGuid);
+
+
+            var allEffects = joystick.GetEffects();
+            foreach (var effectInfo in allEffects)
+                Console.WriteLine("Effect available {0}", effectInfo.Name);
+
+            joystick.Properties.BufferSize = 128;
+            joystick.Acquire();
+
+            while (true)
+            {
+                joystick.Poll();
+                var datas = joystick.GetBufferedData();
+                foreach (var state in datas) {
+                    string pos = state.ToString();
+                    if (pos.Substring(0,6) == "Offset")
+                    {
+                        char axis = pos[8];
+                        int val = int.Parse(pos.Substring(pos.LastIndexOf("Value: ") + 7, pos.IndexOf(" Timestamp") - pos.LastIndexOf("Value: ") - 7)) / 6553 - 5;
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            switch (axis)
+                            {
+                                case 'X':
+                                    Label_JoystickX.Content = val.ToString();
+                                    break;
+                                case 'Y':
+                                    Label_JoystickY.Content = val.ToString();
+                                    break;
+                                case 'Z':
+                                    Label_JoystickZ.Content = val.ToString();
+                                    break;
+                               
+                            }
+                        });
+                    }
+                }
+                Thread.Sleep(100);
+            }
         }
+   
     }
 }

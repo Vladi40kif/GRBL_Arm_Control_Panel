@@ -38,10 +38,16 @@
         <CheckBox Name="CheckBox_ShowSendData" Content="Show send data" HorizontalAlignment="Left" Margin="19,231,0,0" VerticalAlignment="Top"/>
         <Button Name="Button_ClearConsole" Content="Clear" HorizontalAlignment="Left" Margin="17,300,0,0" VerticalAlignment="Top" Height="25" Width="54" Click="Button_ClearConsole_Click"/>
         <Button Name="Button_LogSave" Content="Save log" HorizontalAlignment="Left" Margin="85,300,0,0" VerticalAlignment="Top" Height="25" Width="54" Click="Button_LogSave_Click"/>
-        <Label Name="Lable_X" Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="450,107,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
-        <Label Name="Lable_Y" Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="450,150,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
-        <Label Name="Lable_Z" Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="450,196,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
-        <Label Name="Lable_S" Content="S" Grid.Column="1" HorizontalAlignment="Left" Margin="450,312,0,0" VerticalAlignment="Top" Height="36" Width="79" FontSize="22" RenderTransformOrigin="0.475,0.573"/>
+        <Label Name="Lable_X" Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="571,270,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_Y" Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="571,313,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_Z" Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="571,359,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_S" Content="S" Grid.Column="1" HorizontalAlignment="Left" Margin="571,399,0,0" VerticalAlignment="Top" Height="36" Width="79" FontSize="22" RenderTransformOrigin="0.475,0.573"/>
+        <Label Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="379,40,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
+        <Label Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="379,83,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
+        <Label Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="379,129,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
+        <Label Name="Label_JoystickX" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,40,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
+        <Label Name="Label_JoystickY" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,83,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
+        <Label Name="Label_JoystickZ" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,129,0,0" VerticalAlignment="Top" Height="35" Width="160" FontSize="22"/>
     </Grid>
 
 </Window>

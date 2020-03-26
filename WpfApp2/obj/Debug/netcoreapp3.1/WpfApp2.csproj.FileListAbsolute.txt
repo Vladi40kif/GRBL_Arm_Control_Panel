@@ -24,3 +24,6 @@ C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\obj\Debug\netcoreapp3.1\WpfApp2.Asse
 C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\obj\Debug\netcoreapp3.1\WpfApp2.csproj.CopyComplete
 C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\obj\Debug\netcoreapp3.1\WpfApp2.dll
 C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\obj\Debug\netcoreapp3.1\WpfApp2.pdb
+C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\bin\Debug\netcoreapp3.1\WpfApp2.dll.config
+C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\bin\Debug\netcoreapp3.1\SharpDX.dll
+C:\Users\wwwvl\source\repos\WpfApp2\WpfApp2\bin\Debug\netcoreapp3.1\SharpDX.DirectInput.dll
