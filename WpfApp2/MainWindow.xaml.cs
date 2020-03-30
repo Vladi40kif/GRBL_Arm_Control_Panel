@@ -36,7 +36,7 @@ namespace WpfApp1
             JoystickTimer.AutoReset = true;
             JoystickTimer.Start();
 
-            SendJoysticDataTimer = new Timer(50);
+            SendJoysticDataTimer = new Timer(100);
             SendJoysticDataTimer.Elapsed += SendJoysticDataTimerEvant;
             SendJoysticDataTimer.AutoReset = true;
 
@@ -51,6 +51,8 @@ namespace WpfApp1
 
             _serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
         }
+
+        //serial
 
         public void InitCOMsList()
         {
@@ -81,100 +83,57 @@ namespace WpfApp1
                 sendOk = true;
 
         }
-        private void Button_Start_Click(object sender, RoutedEventArgs e)
+        void SendMsnAndWaitResp(string msg)
         {
-            Button_Stop.IsEnabled = true;
-            Button_Start.IsEnabled = false;
-            try
+            _serialPort.Write(msg);
+            sendOk = false;
+        }
+
+        // control
+
+        private Joystick JoystickInit()
+        {
+
+            var directInput = new DirectInput();
+            var joystickGuid = Guid.Empty;
+
+            foreach (var deviceInstance in directInput.GetDevices(SharpDX.DirectInput.DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
+                joystickGuid = deviceInstance.InstanceGuid;
+
+            if (joystickGuid == Guid.Empty)
+                foreach (var deviceInstance in directInput.GetDevices(SharpDX.DirectInput.DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
+                    joystickGuid = deviceInstance.InstanceGuid;
+
+            if (joystickGuid == Guid.Empty)
             {
-                _serialPort.PortName = ComboBox_COMs.SelectedItem.ToString();
-                _serialPort.BaudRate = int.Parse(ComboBox_Bundrate.Text);
-                _serialPort.Open();
+                Console.WriteLine("No joystick/Gamepad found.");
+                Console.ReadKey();
+                Environment.Exit(1);
             }
-            catch (Exception)
-            {
-                Button_Stop.IsEnabled = false;
-                Button_Start.IsEnabled = false;
-                MessageBox.Show("Some setings is wrong!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-        private void Button_Stop_Click(object sender, RoutedEventArgs e)
-        {
-            Button_Stop.IsEnabled = false;
-            Button_Start.IsEnabled = true;
-
-            _serialPort.Close();
-        }
-        private void ComboBox_COMs_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ComboBox_Bundrate.SelectedItem != null)
-                Button_Start.IsEnabled = true;
-        }
-        private void ComboBox_Bundrate_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (ComboBox_COMs.SelectedItem != null)
-                Button_Start.IsEnabled = true;
-        }
-        private void Button_Send_Click(object sender, RoutedEventArgs e)
-        {
-            if (CheckBox_ShowSendData.IsChecked == true)
-                this.Dispatcher.Invoke(() => AddToListBox(TextBox_InputCommand.Text));
-
-            _serialPort.WriteLine(TextBox_InputCommand.Text);
-        }
-        private void TextBox_InputCommand_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == System.Windows.Input.Key.Enter)
-                Button_Send_Click(this, new RoutedEventArgs());
-        }
-        private void AddToListBox(string msg)
-        {
-            time = DateTime.Now;
-            string _time = time.ToString("HH:mm:ss") + "." + time.Millisecond.ToString();
-            ListBox_Chat.Items.Add(CheckBox_ShowTime.IsChecked == true ? _time + ":\t" + msg : msg);
-            var border = (Border)VisualTreeHelper.GetChild(ListBox_Chat, 0);
-            var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-            scrollViewer.ScrollToBottom();
-        }
-        private void Button_ClearConsole_Click(object sender, RoutedEventArgs e)
-        {
-            ListBox_Chat.Items.Clear();
-        }
 
 
-        private void CheckBox_JoysticSync_Checked(object sender, RoutedEventArgs e)
-        {
-            SendJoysticDataTimer.Enabled = true;
-        }
-        private void CheckBox_JoysticSync_Unchecked(object sender, RoutedEventArgs e)
-        {
-            SendJoysticDataTimer.Enabled = false;
-        }
+            var joystick = new Joystick(directInput, joystickGuid);
 
-        private void Button_LogSave_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Title = "Save";
-            saveFileDialog.FileName = "*.txt";
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                var FilePath = saveFileDialog.FileName;
-                using (var file = new StreamWriter(FilePath))
-                {
-                    foreach (var item in ListBox_Chat.Items)
-                        file.WriteLine(item.ToString());
-                }
-            }
+            Console.WriteLine("Found Joystick/Gamepad with GUID: {0}", joystickGuid);
+
+
+            var allEffects = joystick.GetEffects();
+            foreach (var effectInfo in allEffects)
+                Console.WriteLine("Effect available {0}", effectInfo.Name);
+
+            joystick.Properties.BufferSize = 128;
+            joystick.Acquire();
+
+            return joystick;
         }
         private void Grid_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!sendOk)
-                return;
 
             double stp = 1.5;
-            switch (e.Key) {
+            switch (e.Key)
+            {
                 case System.Windows.Input.Key.F1:        //x++
-                    X+=stp ;
+                    X += stp;
                     break;
                 case System.Windows.Input.Key.F2:        //x--
                     X -= stp;
@@ -218,7 +177,7 @@ namespace WpfApp1
 
             SendMsnAndWaitResp(STR);
             AddToListBox(STR);
-            
+
             this.Dispatcher.Invoke(() => {
                 Lable_X.Content = X.ToString();
                 Lable_Y.Content = Y.ToString();
@@ -226,14 +185,8 @@ namespace WpfApp1
                 Lable_S.Content = S.ToString();
             });
         }
-
-
-        void SendMsnAndWaitResp(string msg ) {
-            _serialPort.Write(msg);
-            sendOk = false;
-        }
-
-        private void SendJoysticDataTimerEvant(Object source, ElapsedEventArgs e) {
+        private void SendJoysticDataTimerEvant(Object source, ElapsedEventArgs e)
+        {
             if (!sendOk)
                 return;
 
@@ -249,50 +202,16 @@ namespace WpfApp1
                 SendMsnAndWaitResp(STR);
             }
         }
-
-
-        private Joystick JoystickInit() {
-            
-            var directInput = new DirectInput();
-            var joystickGuid = Guid.Empty;
-
-            foreach (var deviceInstance in directInput.GetDevices(SharpDX.DirectInput.DeviceType.Gamepad, DeviceEnumerationFlags.AllDevices))
-                joystickGuid = deviceInstance.InstanceGuid;
-
-            if (joystickGuid == Guid.Empty)
-                foreach (var deviceInstance in directInput.GetDevices(SharpDX.DirectInput.DeviceType.Joystick, DeviceEnumerationFlags.AllDevices))
-                    joystickGuid = deviceInstance.InstanceGuid;
-
-            if (joystickGuid == Guid.Empty)
-            {
-                Console.WriteLine("No joystick/Gamepad found.");
-                Console.ReadKey();
-                Environment.Exit(1);
-            }
-
-
-            var joystick = new Joystick(directInput, joystickGuid);
-
-            Console.WriteLine("Found Joystick/Gamepad with GUID: {0}", joystickGuid);
-
-
-            var allEffects = joystick.GetEffects();
-            foreach (var effectInfo in allEffects)
-                Console.WriteLine("Effect available {0}", effectInfo.Name);
-
-            joystick.Properties.BufferSize = 128;
-            joystick.Acquire();
-
-            return joystick;
-        }
         private void JoystickTimedEvent(Object source, ElapsedEventArgs e)
-        { 
+        {
+
             string pos = "++++++++++++";
 
             joystick.Poll();
             var datas = joystick.GetBufferedData();
 
-            foreach (var state in datas) { 
+            foreach (var state in datas)
+            {
                 pos = state.ToString();
 
                 if (pos.Substring(0, 6) == "Offset")
@@ -303,19 +222,21 @@ namespace WpfApp1
                     if (val == 1 || val == -1)
                         val = 0;
 
-                
-
                     switch (axis)
                     {
                         case 'X':
-                            joystickZ = val*-1;
+                            joystickZ = val * -1;
                             break;
                         case 'Y':
-                            joystickY = val*-1;
+                            joystickY = val * -1;
                             break;
                         case 'Z':
                             joystickX = val;
                             break;
+                     
+
+
+
 
                     };
 
@@ -325,8 +246,100 @@ namespace WpfApp1
                         Label_JoystickY.Content = joystickY;
                         Label_JoystickZ.Content = joystickZ;
                     });
+
                 }
             }
-        }     
+        }
+
+        //view  element
+
+        private void ComboBox_COMs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBox_Bundrate.SelectedItem != null)
+                Button_Start.IsEnabled = true;
+        }
+        private void ComboBox_Bundrate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBox_COMs.SelectedItem != null)
+                Button_Start.IsEnabled = true;
+        }
+
+        private void Button_Start_Click(object sender, RoutedEventArgs e)
+        {
+            Button_Stop.IsEnabled = true;
+            Button_Start.IsEnabled = false;
+            try
+            {
+                _serialPort.PortName = ComboBox_COMs.SelectedItem.ToString();
+                _serialPort.BaudRate = int.Parse(ComboBox_Bundrate.Text);
+                _serialPort.Open();
+            }
+            catch (Exception)
+            {
+                Button_Stop.IsEnabled = false;
+                Button_Start.IsEnabled = false;
+                MessageBox.Show("Some setings is wrong!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void Button_Stop_Click(object sender, RoutedEventArgs e)
+        {
+            Button_Stop.IsEnabled = false;
+            Button_Start.IsEnabled = true;
+
+            _serialPort.Close();
+        }
+        private void Button_Send_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBox_ShowSendData.IsChecked == true)
+                this.Dispatcher.Invoke(() => AddToListBox(TextBox_InputCommand.Text));
+
+            _serialPort.WriteLine(TextBox_InputCommand.Text);
+        }
+        private void Button_ClearConsole_Click(object sender, RoutedEventArgs e)
+        {
+            ListBox_Chat.Items.Clear();
+        }
+
+        private void CheckBox_JoysticSync_Checked(object sender, RoutedEventArgs e)
+        {
+            SendJoysticDataTimer.Enabled = true;
+        }
+        private void CheckBox_JoysticSync_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SendJoysticDataTimer.Enabled = false;
+        }
+
+        private void TextBox_InputCommand_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == System.Windows.Input.Key.Enter)
+                Button_Send_Click(this, new RoutedEventArgs());
+        }
+    
+        private void AddToListBox(string msg)
+        {
+            time = DateTime.Now;
+            string _time = time.ToString("HH:mm:ss") + "." + time.Millisecond.ToString();
+            ListBox_Chat.Items.Add(CheckBox_ShowTime.IsChecked == true ? _time + ":\t" + msg : msg);
+            var border = (Border)VisualTreeHelper.GetChild(ListBox_Chat, 0);
+            var scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+            scrollViewer.ScrollToBottom();
+        }
+
+        private void Button_LogSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Save";
+            saveFileDialog.FileName = "*.txt";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                var FilePath = saveFileDialog.FileName;
+                using (var file = new StreamWriter(FilePath))
+                {
+                    foreach (var item in ListBox_Chat.Items)
+                        file.WriteLine(item.ToString());
+                }
+            }
+        }
+        
     }
 }

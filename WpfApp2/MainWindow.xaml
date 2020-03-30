@@ -36,19 +36,27 @@
         <Button Name="Button_Send" Content="SEND" Margin="0,0,395,15" VerticalAlignment="Bottom" Height="25" Width="45" VerticalContentAlignment="Bottom" MinHeight="0" HorizontalAlignment="Right" Click="Button_Send_Click" FontSize="14" Grid.Column="1" />
         <CheckBox Name="CheckBox_ShowTime" Content="Show time" HorizontalAlignment="Left" Margin="19,207,0,0" VerticalAlignment="Top" Width="91"/>
         <CheckBox Name="CheckBox_ShowSendData" Content="Show send data" HorizontalAlignment="Left" Margin="19,231,0,0" VerticalAlignment="Top"/>
+        <CheckBox Name="CheckBox_JoysticSync" Content="Sync with joystick" HorizontalAlignment="Left" Margin="19,258,0,0" VerticalAlignment="Top" Checked="CheckBox_JoysticSync_Checked" Unchecked="CheckBox_JoysticSync_Unchecked"/>
         <Button Name="Button_ClearConsole" Content="Clear" HorizontalAlignment="Left" Margin="17,300,0,0" VerticalAlignment="Top" Height="25" Width="54" Click="Button_ClearConsole_Click"/>
         <Button Name="Button_LogSave" Content="Save log" HorizontalAlignment="Left" Margin="85,300,0,0" VerticalAlignment="Top" Height="25" Width="54" Click="Button_LogSave_Click"/>
-        <Label Name="Lable_X" Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="571,270,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
-        <Label Name="Lable_Y" Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="571,313,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
-        <Label Name="Lable_Z" Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="571,359,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
-        <Label Name="Lable_S" Content="S" Grid.Column="1" HorizontalAlignment="Left" Margin="571,399,0,0" VerticalAlignment="Top" Height="36" Width="79" FontSize="22" RenderTransformOrigin="0.475,0.573"/>
-        <Label Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="379,40,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
-        <Label Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="379,83,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
-        <Label Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="379,129,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
-        <Label Name="Label_JoystickX" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,40,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
-        <Label Name="Label_JoystickY" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,83,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
-        <Label Name="Label_JoystickZ" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,129,0,0" VerticalAlignment="Top" Height="35" Width="160" FontSize="22"/>
-        <CheckBox Name="CheckBox_JoysticSync" Content="Sync with joystick" HorizontalAlignment="Left" Margin="19,258,0,0" VerticalAlignment="Top" Checked="CheckBox_JoysticSync_Checked" Unchecked="CheckBox_JoysticSync_Unchecked"/>
+        <Label Name="Lable_X" Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="446,239,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_Y" Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="446,282,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_Z" Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="446,328,0,0" VerticalAlignment="Top" Height="35" Width="79" FontSize="22"/>
+        <Label Name="Lable_S" Content="S" Grid.Column="1" HorizontalAlignment="Left" Margin="446,368,0,0" VerticalAlignment="Top" Height="36" Width="79" FontSize="22" RenderTransformOrigin="0.475,0.573"/>
+        <Label Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="416,53,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
+        <Label Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="416,96,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
+        <Label Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="416,142,0,0" VerticalAlignment="Top" Height="35" Width="32" FontSize="22"/>
+        <Label Name="Label_JoystickX" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="446,53,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
+        <Label Name="Label_JoystickY" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="446,96,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
+        <Label Name="Label_JoystickZ" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="446,142,0,0" VerticalAlignment="Top" Height="35" Width="160" FontSize="22"/>
+        <Border BorderThickness="1" BorderBrush="Black" Grid.Column="1" Margin="402,53,67,259"/>
+        <Label Content="Joystick state" Grid.Column="1" HorizontalAlignment="Left" Margin="457,11,0,0" VerticalAlignment="Top" FontSize="24"/>
+        <Label Content="Arm position" Grid.Column="1" HorizontalAlignment="Left" Margin="457,187,0,0" VerticalAlignment="Top" FontSize="24"/>
+        <Label Content="X" Grid.Column="1" HorizontalAlignment="Left" Margin="416,239,0,0" VerticalAlignment="Top" Height="47" Width="32" FontSize="22"/>
+        <Label Content="Y" Grid.Column="1" HorizontalAlignment="Left" Margin="416,282,0,0" VerticalAlignment="Top" Height="47" Width="32" FontSize="22"/>
+        <Label Content="Z" Grid.Column="1" HorizontalAlignment="Left" Margin="416,327,0,0" VerticalAlignment="Top" Height="46" Width="32" FontSize="22"/>
+        <Border BorderThickness="1" BorderBrush="Black" Grid.Column="1" Margin="402,231,68,35"/>
+        <Label Content="S" Grid.Column="1" HorizontalAlignment="Left" Margin="416,367,0,0" VerticalAlignment="Top" Height="46" Width="32" FontSize="22"/>
     </Grid>
 
 </Window>
