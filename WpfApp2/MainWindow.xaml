@@ -48,6 +48,7 @@
         <Label Name="Label_JoystickX" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,40,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
         <Label Name="Label_JoystickY" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,83,0,0" VerticalAlignment="Top" Height="35" Width="141" FontSize="22"/>
         <Label Name="Label_JoystickZ" Content="0" Grid.Column="1" HorizontalAlignment="Left" Margin="409,129,0,0" VerticalAlignment="Top" Height="35" Width="160" FontSize="22"/>
+        <CheckBox Name="CheckBox_JoysticSync" Content="Sync with joystick" HorizontalAlignment="Left" Margin="19,258,0,0" VerticalAlignment="Top" Checked="CheckBox_JoysticSync_Checked" Unchecked="CheckBox_JoysticSync_Unchecked"/>
     </Grid>
 
 </Window>

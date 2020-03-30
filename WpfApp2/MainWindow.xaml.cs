@@ -6,31 +6,39 @@ using System.Windows.Media;
 using System.IO;
 using Microsoft.Win32;
 using System.IO.Ports;
-using System.Threading;
 using SharpDX.DirectInput;
+using System.Timers;
 
 namespace WpfApp1
 {
 
     public partial class MainWindow : Window
     {
-        private DateTime time = DateTime.Now;
-        private SerialPort _serialPort;
+        DateTime time = DateTime.Now;
+        SerialPort _serialPort;
+        bool sendOk;
+
+        Joystick joystick;
+        readonly Timer JoystickTimer, SendJoysticDataTimer;
+
         double X, Y, Z;
-        double joystickX, joystickY, joystickZ;
+        int joystickX, joystickY, joystickZ;
         int S;
-        Thread joysticThread;
+       
         public MainWindow()
         {
-        
-            X = Y = Z = 0.0;
-            S = 0;
+            sendOk = true;
 
-            joysticThread = new Thread(new ThreadStart(Joystick));
-            joysticThread.Start();
+            joystick = JoystickInit();
 
+            JoystickTimer = new Timer(70);
+            JoystickTimer.Elapsed += JoystickTimedEvent;
+            JoystickTimer.AutoReset = true;
+            JoystickTimer.Start();
 
-            StringComparer stringComparer = StringComparer.OrdinalIgnoreCase;
+            SendJoysticDataTimer = new Timer(50);
+            SendJoysticDataTimer.Elapsed += SendJoysticDataTimerEvant;
+            SendJoysticDataTimer.AutoReset = true;
 
             _serialPort = new SerialPort();
 
@@ -43,6 +51,7 @@ namespace WpfApp1
 
             _serialPort.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
         }
+
         public void InitCOMsList()
         {
             ComboBox_COMs.Items.Clear();
@@ -60,10 +69,17 @@ namespace WpfApp1
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
+
+            string msg = sp.ReadExisting().Trim();
+
             this.Dispatcher.Invoke(() =>
             {
-                AddToListBox(sp.ReadExisting().Trim());
+                AddToListBox(msg);
             });
+
+            if (!sendOk && msg == "ok")
+                sendOk = true;
+
         }
         private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
@@ -124,6 +140,17 @@ namespace WpfApp1
         {
             ListBox_Chat.Items.Clear();
         }
+
+
+        private void CheckBox_JoysticSync_Checked(object sender, RoutedEventArgs e)
+        {
+            SendJoysticDataTimer.Enabled = true;
+        }
+        private void CheckBox_JoysticSync_Unchecked(object sender, RoutedEventArgs e)
+        {
+            SendJoysticDataTimer.Enabled = false;
+        }
+
         private void Button_LogSave_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -141,10 +168,13 @@ namespace WpfApp1
         }
         private void Grid_KeyDown(object sender, KeyEventArgs e)
         {
+            if (!sendOk)
+                return;
+
             double stp = 1.5;
             switch (e.Key) {
                 case System.Windows.Input.Key.F1:        //x++
-                    X+=stp;
+                    X+=stp ;
                     break;
                 case System.Windows.Input.Key.F2:        //x--
                     X -= stp;
@@ -185,7 +215,8 @@ namespace WpfApp1
             }
 
             string STR = "G0 X" + X.ToString() + " Y" + Y.ToString() + " Z" + Z.ToString() + "\n";
-            _serialPort.Write(STR);
+
+            SendMsnAndWaitResp(STR);
             AddToListBox(STR);
             
             this.Dispatcher.Invoke(() => {
@@ -195,8 +226,33 @@ namespace WpfApp1
                 Lable_S.Content = S.ToString();
             });
         }
-        void Joystick()
-        { 
+
+
+        void SendMsnAndWaitResp(string msg ) {
+            _serialPort.Write(msg);
+            sendOk = false;
+        }
+
+        private void SendJoysticDataTimerEvant(Object source, ElapsedEventArgs e) {
+            if (!sendOk)
+                return;
+
+            if (X != joystickX || Y != joystickY || Z != joystickZ)
+            {
+
+                X += joystickX;
+                Y += joystickY;
+                Z += joystickZ;
+
+                string STR = "G0 X" + X.ToString() + " Y" + Y.ToString() + " Z" + Z.ToString() + "\n";
+
+                SendMsnAndWaitResp(STR);
+            }
+        }
+
+
+        private Joystick JoystickInit() {
+            
             var directInput = new DirectInput();
             var joystickGuid = Guid.Empty;
 
@@ -227,37 +283,50 @@ namespace WpfApp1
             joystick.Properties.BufferSize = 128;
             joystick.Acquire();
 
-            while (true)
-            {
-                joystick.Poll();
-                var datas = joystick.GetBufferedData();
-                foreach (var state in datas) {
-                    string pos = state.ToString();
-                    if (pos.Substring(0,6) == "Offset")
-                    {
-                        char axis = pos[8];
-                        int val = int.Parse(pos.Substring(pos.LastIndexOf("Value: ") + 7, pos.IndexOf(" Timestamp") - pos.LastIndexOf("Value: ") - 7)) / 6553 - 5;
-                        this.Dispatcher.Invoke(() =>
-                        {
-                            switch (axis)
-                            {
-                                case 'X':
-                                    Label_JoystickX.Content = val.ToString();
-                                    break;
-                                case 'Y':
-                                    Label_JoystickY.Content = val.ToString();
-                                    break;
-                                case 'Z':
-                                    Label_JoystickZ.Content = val.ToString();
-                                    break;
-                               
-                            }
-                        });
-                    }
-                }
-                Thread.Sleep(100);
-            }
+            return joystick;
         }
-   
+        private void JoystickTimedEvent(Object source, ElapsedEventArgs e)
+        { 
+            string pos = "++++++++++++";
+
+            joystick.Poll();
+            var datas = joystick.GetBufferedData();
+
+            foreach (var state in datas) { 
+                pos = state.ToString();
+
+                if (pos.Substring(0, 6) == "Offset")
+                {
+                    char axis = pos[8];
+                    int val = int.Parse(pos.Substring(pos.LastIndexOf("Value: ") + 7, pos.IndexOf(" Timestamp") - pos.LastIndexOf("Value: ") - 7)) / 6553 - 5;
+
+                    if (val == 1 || val == -1)
+                        val = 0;
+
+                
+
+                    switch (axis)
+                    {
+                        case 'X':
+                            joystickZ = val*-1;
+                            break;
+                        case 'Y':
+                            joystickY = val*-1;
+                            break;
+                        case 'Z':
+                            joystickX = val;
+                            break;
+
+                    };
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        Label_JoystickX.Content = joystickX;
+                        Label_JoystickY.Content = joystickY;
+                        Label_JoystickZ.Content = joystickZ;
+                    });
+                }
+            }
+        }     
     }
 }
