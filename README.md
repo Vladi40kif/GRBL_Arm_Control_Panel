@@ -2,6 +2,8 @@
 
 Simple and chip program for control robotic arm.   
 
+[VIDEO](https://youtu.be/OGnDuEYZ1Iw)
+
 ![alt text](https://github.com/Vladi40kif/GRBL_Arm_Control_Panel/blob/master/img1.jpg?raw=true)
 
 ## NO need installation
@@ -28,11 +30,11 @@ X Axis:
 	F2 - decrement
 
 Z Axis:
-	F3 - increment       
+	F3 - increment
 	F4 - decrement       
 
 Y Axis:
-	F5 - increment        
+	F5 - increment
 	F6 - decrement        
 
 Spindel PWM:

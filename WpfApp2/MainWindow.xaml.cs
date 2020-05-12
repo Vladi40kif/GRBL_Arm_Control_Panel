@@ -213,32 +213,54 @@ namespace WpfApp1
             foreach (var state in datas)
             {
                 pos = state.ToString();
+                //"Offset: Buttons5, Value: 128 Timestamp: 35556109 Sequence: 6"
 
                 if (pos.Substring(0, 6) == "Offset")
                 {
-                    char axis = pos[8];
-                    int val = int.Parse(pos.Substring(pos.LastIndexOf("Value: ") + 7, pos.IndexOf(" Timestamp") - pos.LastIndexOf("Value: ") - 7)) / 6553 - 5;
-
-                    if (val == 1 || val == -1)
-                        val = 0;
-
-                    switch (axis)
+                    if (pos.Contains("Buttons") && pos[25] == '1')
                     {
-                        case 'X':
-                            joystickZ = val * -1;
-                            break;
-                        case 'Y':
-                            joystickY = val * -1;
-                            break;
-                        case 'Z':
-                            joystickX = val;
-                            break;
-                     
+                        switch (pos[15]) {
+                            case '4':
+                                if (S >= 60)
+                                    break;
+                                S+=10;
+                                _serialPort.Write("M3 S" + S.ToString() + "\n");
+                                //AddToListBox("M3 S" + S.ToString() + "\n");
+                                break;
+                            case '5':
+                                if (S <= 0)
+                                    break;
+                                S-=10;
+                                _serialPort.Write("M3 S" + S.ToString() + "\n");
+                                //AddToListBox("M3 S" + S.ToString() + "\n");
+                                break;
+                            default:
+                                break;
+                        }
 
+                    }
+                    else
+                    {
+                        char axis = pos[8];
+                        int val = int.Parse(pos.Substring(pos.LastIndexOf("Value: ") + 7, pos.IndexOf(" Timestamp") - pos.LastIndexOf("Value: ") - 7)) / 6553 - 5;
 
+                        if (val == 1 || val == -1)
+                            val = 0;
 
+                        switch (axis)
+                        {
+                            case 'X':
+                                joystickZ = val * -1;
+                                break;
+                            case 'Y':
+                                joystickY = val * -1;
+                                break;
+                            case 'Z':
+                                joystickX = val;
+                                break;
 
-                    };
+                        };
+                    }
 
                     this.Dispatcher.Invoke(() =>
                     {
